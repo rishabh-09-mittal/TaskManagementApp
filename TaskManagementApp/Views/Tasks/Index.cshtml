@@ -1,0 +1,85 @@
+@model IEnumerable<TaskManagementApp.Models.TaskItem>
+
+@{
+    ViewData["Title"] = "Tasks";
+}
+
+<h1>Task List</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Create New</a>
+</p>
+
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <input type="text"
+               name="searchString"
+               value="@Context.Request.Query["searchString"]"
+               class="form-control"
+               placeholder="Search by title or description" />
+    </div>
+
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">-- All Status --</option>
+            @foreach (var s in ViewBag.StatusList as List<TaskManagementApp.Models.Enums.TaskStatus>)
+            {
+                <option value="@s"
+                        selected="@(Context.Request.Query["status"] == s.ToString())">
+                    @s
+                </option>
+            }
+        </select>
+
+    </div>
+
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-primary w-100">
+            Search
+        </button>
+    </div>
+
+    <div class="col-md-2">
+        <a asp-action="Index" class="btn btn-secondary w-100">
+            Reset
+        </a>
+    </div>
+</form>
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Description</th>
+            <th>Due Date</th>
+            <th>Status</th>
+            <th>Remarks</th>
+            <th>Created On</th>
+            <th>Updated On</th>
+            <th>Created By</th>
+            <th>Updated By</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Title</td>
+                <td>@item.Description</td>
+                <td>@item.DueDate.ToString("dd-MMM-yyyy")</td>
+                <td>@item.Status</td>
+                <td>@item.Remarks</td>
+                <td>@item.CreatedOn.ToString("dd-MMM-yyyy HH:mm")</td>
+                <td>@item.UpdatedOn.ToString("dd-MMM-yyyy HH:mm")</td>
+                <td>@(item.CreatedByUser?.UserName ?? "-")</td>
+                <td>@(item.UpdatedByUser?.UserName ?? "-")</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.TaskId">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.TaskId">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.TaskId">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
